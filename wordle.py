@@ -1,5 +1,4 @@
 # Code for a Wordle Clone
-
 import random
 
 def wordlist(file):
@@ -12,40 +11,66 @@ def wordlist(file):
 
     return wordlist
 
+def replay(num_guesses, ans, incorrect):
+    printed, replay, end = False, True, False
+    one_guess = "Great work in getting it in 1 try!"
+    guessed = "Congrats! You took " + str(num_guesses) + " guesses out of 5!"
+
+    if num_guesses == 1 and incorrect == False:
+        print(one_guess)
+        print("-" * len(one_guess))
+        printed = True  
+    if (1 < num_guesses <= 5 and incorrect == False):
+        print(guessed)
+        print("-" * len(guessed))
+        printed = True
+
+    if num_guesses > 5:
+        print("Sorry, you ran out of tries.")
+        print("Better luck next time!")
+        print("The word was...")
+        print("(>._.)> ~ " + ans + " ~ <(._.<)")
+        printed = True
+        
+    if printed:
+        while True:
+            response = input("Would you like to play again?: ")
+
+            if response.lower() == "yes":
+                replay = True
+                break
+            if response.lower() == "no":
+                end = True
+                break
+            else:
+                print("Invalid input. Please enter 'yes' or 'no'.")
+        
+        print("-" * (31 + len(response)))
+
+    return replay, end, printed
+
 def Wordle(wordlist):
-    incorrect = True
+    incorrect, rply = True, False
     guesses = 0
     used_letters = []
+    right_letters = []
     answer = random.choice(wordlist)
-    print(answer)
+    # print(answer)
+    print("-" * 23)
 
     while incorrect:
 
         output = "" # Empty string
         letters = {} # Map
 
-        if guesses == 5:
-            incorrect = False
-            
-            print()
-            print("Sorry, you ran out of tries...")
-            print("The answer was " + answer + "." + "\n")
-            
-            response = input("Would you like to try again?: ")
-            print()
-            
-            if response.lower() == "yes":
-                incorrect = True
-                guesses = 0
-            if response.lower() == "no":
-                break
 
         user_input = input("Enter your guess: ").lower()
-        used_letters.sort()
-        print("Used Letters: " + str(used_letters))
+        # used_letters.sort()
+        # print("Used Letters: " + str(used_letters))
 
         if len(user_input) != len(answer):
-            print("Invalid guess" + "\n")
+            print("Invalid guess")
+            print("-" * len("Invalid guess"))
             continue
 
         # Puts all characters in OUTPUT into map
@@ -54,15 +79,17 @@ def Wordle(wordlist):
 
         # Goes through INPUT & compares it to OUTPUT
         for i in range(len(user_input)):
+            if user_input[i] not in used_letters:
+                used_letters.append(user_input[i])
             # If it is the same, add a "*" to output & remove the key from the map
             if user_input[i] == answer[i]:
                 output += "*"
                 letters.pop(i)
+                if user_input[i] not in right_letters:
+                    right_letters.append(user_input[i])
             # If not, add a "-" to the output
             else:
                 output += "-"
-                if user_input[i] not in used_letters:
-                    used_letters.append(user_input[i])
 
         # Goes through INPUT STR
         for h in range(len(answer)):
@@ -76,8 +103,8 @@ def Wordle(wordlist):
                     if user_input[h] == letters[j] and output[h] != "*":
                         output = output[:h] + "+" + output[h+1:]
                         letters.pop(j)
-                        if user_input[h] in used_letters:
-                            used_letters.remove(user_input[h])
+                        if user_input[h] not in right_letters:
+                            right_letters.append(user_input[h])
                 # Key is not in map --> Skip iteration
                 else:
                     continue
@@ -85,20 +112,25 @@ def Wordle(wordlist):
         if user_input == answer:
             incorrect = False
         
-        print(output + "\n")
+        print(output)
+        correct_str = "Correct Letters: " + str(right_letters)
+        print(correct_str)
+        print("-" * len(correct_str))
         guesses += 1
 
-    if guesses == 1:
-        print("Great work in getting it in 1 try!")
-    elif 1 < guesses <= 5 and incorrect == False:
-        print("Congrats! You took " + str(guesses) + " guesses out of 5!")
-    else:
-        print("Better luck next time!")
+        rply, end, printed = replay(guesses, answer, incorrect)
+        
+        if (printed):
+            return rply, end
 
 def main():
-    wlist = wordlist("wordlelist.txt")
-    Wordle(wlist)
+    play = True
+    end = False
 
-    return
+    while (play and not end):
+        wlist = wordlist("wordlelist.txt")
+        play, end = Wordle(wlist)
+
+    return 0
 
 main()
