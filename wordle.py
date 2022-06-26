@@ -13,19 +13,25 @@ def wordlist(file):
 
 def replay(num_guesses, ans, incorrect):
     printed, replay, end = False, True, False
-    one_guess = "Great work in getting it in 1 try!"
-    guessed = "Congrats! You took " + str(num_guesses) + " guesses out of 5!"
+    one_guess = "Great work in getting it in 1 try! ʕ•́ᴥ•̀ʔっ"
+    guessed = "Congrats! You took " + str(num_guesses) + " guesses out of 5! ❤"
+    five_guess = "Whew, that was close! You took " + str(num_guesses) + " guesses to get that one. (っ＾▿＾)💨"
 
     if num_guesses == 1 and incorrect == False:
         print(one_guess)
         print("-" * len(one_guess))
         printed = True  
-    if (1 < num_guesses <= 5 and incorrect == False):
+    if (1 < num_guesses < 5 and incorrect == False):
         print(guessed)
         print("-" * len(guessed))
         printed = True
 
-    if num_guesses > 5:
+    if (num_guesses == 5 and incorrect == False):
+        print(five_guess)
+        print("-" * len(five_guess))
+        printed = True
+
+    if num_guesses == 5 and not printed:
         print("Sorry, you ran out of tries.")
         print("Better luck next time!")
         print("The word was...")
@@ -55,7 +61,7 @@ def Wordle(wordlist):
     used_letters = []
     right_letters = []
     answer = random.choice(wordlist)
-    # print(answer)
+    print(answer)
     print("-" * 23)
 
     while incorrect:
@@ -112,11 +118,14 @@ def Wordle(wordlist):
         if user_input == answer:
             incorrect = False
         
-        print(output)
+        guesses += 1
         correct_str = "Correct Letters: " + str(right_letters)
+        count_str = "Guesses: " + str(guesses)
+        
+        print(output)
+        print(count_str)
         print(correct_str)
         print("-" * len(correct_str))
-        guesses += 1
 
         rply, end, printed = replay(guesses, answer, incorrect)
         
@@ -130,6 +139,8 @@ def main():
     while (play and not end):
         wlist = wordlist("wordlelist.txt")
         play, end = Wordle(wlist)
+
+    print("Thanks for playing! :)")
 
     return 0
 
